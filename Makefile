@@ -25,7 +25,27 @@ test:
 	poetry run pytest -q tests/
 
 experiment:
-	@echo "TODO: phase 3"
+	@if [ -z "$(INV)" ] || [ -z "$(BACKEND)" ] || [ -z "$(SCENARIO)" ]; then \
+	  echo "Usage: make experiment INV={no_cache|ttl|operation|tag} BACKEND={redis|memory|none} SCENARIO={read_heavy|mixed|mutation_burst}"; \
+	  exit 2; \
+	fi
+	@mkdir -p reports
+	@if [ "$(INV)" = "no_cache" ]; then \
+	  YAML="/app/examples/graphql-api-no-cache.yaml"; \
+	else \
+	  YAML="/app/examples/graphql-api-$(INV)-$(BACKEND).yaml"; \
+	fi; \
+	echo "Using YAML: $$YAML"; \
+	echo "DSL_PATH=$$YAML" > .env; \
+	$(COMPOSE) stop framework; \
+	$(COMPOSE) rm -f framework; \
+	$(COMPOSE) up -d framework; \
+	$(COMPOSE) exec -T redis redis-cli FLUSHDB || true; \
+	echo "Waiting for framework boot..."; \
+	sleep 12; \
+	poetry run python -m loadtest.runner \
+	  --strategy=$(INV) --backend=$(BACKEND) --scenario=$(SCENARIO); \
+	rm -f .env
 
 experiment-quick:
 	@echo "TODO: phase 3"

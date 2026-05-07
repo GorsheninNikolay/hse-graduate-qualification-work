@@ -35,7 +35,7 @@ services:
       POSTGRES_DSN: postgresql://postgres:postgres@postgres:5432/postgres
       REDIS_URL: redis://redis:6379/0
       SCHEMA_PATH: /app/examples/schema.graphql
-      DSL_PATH: /app/examples/graphql-api-no-cache.yaml
+      DSL_PATH: ${DSL_PATH:-/app/examples/graphql-api-no-cache.yaml}
     volumes:
       - ./examples:/app/examples:ro
     depends_on:
@@ -46,9 +46,10 @@ services:
 
   locust:
     image: framework:phase0
-    depends_on:
-      - framework
     command: ["sleep", "infinity"]
+    # No depends_on: locust idles via sleep infinity and is invoked from the
+    # host by Phase 3+ (Q4); the experiment workflow needs to stop+rm framework
+    # without taking locust down too, so the dependency edge is dropped.
 
 volumes:
   postgres_data:

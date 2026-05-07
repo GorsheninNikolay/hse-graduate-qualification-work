@@ -230,6 +230,9 @@ docs/architecture
 # Temporary files
 .tmp/
 
+# Experimental output (re-runnable; phase 5 ships presentation-materials/)
+reports/
+
 # Beads / Dolt files (added by bd init)
 .dolt/
 *.db

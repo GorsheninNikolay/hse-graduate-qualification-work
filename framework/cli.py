@@ -17,6 +17,7 @@ from framework.cache.memory_backend import MemoryBackend
 from framework.cache.redis_backend import RedisBackend
 from framework.dsl.loader import load
 from framework.graphql.server import build_graphql_app
+from framework.stats import RequestCounters, build_stats_payload
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,23 @@ _state: dict[str, Any] = {}
 
 
 async def stats(_request: Request) -> JSONResponse:
-    return JSONResponse({"status": "booting"})
+    counters = _state.get("counters")
+    requests = _state.get("request_counters")
+    registry = _state.get("registry")
+    if counters is None or requests is None or registry is None:
+        # Pre-lifespan / post-shutdown: return zero-valued payload so callers
+        # see a stable schema without a 503-vs-200 distinction.
+        return JSONResponse(
+            {
+                "cache_hits": 0,
+                "cache_misses": 0,
+                "invalidations": 0,
+                "errors": {},
+                "request_count_by_op": {},
+                "backend": "none",
+            }
+        )
+    return JSONResponse(build_stats_payload(counters, requests, registry))
 
 
 async def _graphql_dispatch(
@@ -69,6 +86,7 @@ async def _lifespan(_app: Starlette) -> AsyncIterator[None]:
 
     # Phase 2: instantiate cache backends per profile (Q8 conditional Redis).
     counters = CacheCounters()
+    request_counters = RequestCounters()
     backends_by_profile: dict[str, CacheBackend] | None = None
     redis_client: redis_async.Redis | None = None
 
@@ -110,12 +128,18 @@ async def _lifespan(_app: Starlette) -> AsyncIterator[None]:
 
     sdl = schema_path.read_text()
     graphql_app = build_graphql_app(
-        sdl, registry, pool, backends_by_profile=backends_by_profile
+        sdl,
+        registry,
+        pool,
+        backends_by_profile=backends_by_profile,
+        request_counters=request_counters,
     )
 
     _state["pool"] = pool
     _state["graphql_app"] = graphql_app
     _state["counters"] = counters
+    _state["request_counters"] = request_counters
+    _state["registry"] = registry
     _state["backends_by_profile"] = backends_by_profile
     _state["redis_client"] = redis_client
     logger.info(
@@ -135,6 +159,8 @@ async def _lifespan(_app: Starlette) -> AsyncIterator[None]:
             await existing_redis.aclose()
         _state.pop("graphql_app", None)
         _state.pop("counters", None)
+        _state.pop("request_counters", None)
+        _state.pop("registry", None)
         _state.pop("backends_by_profile", None)
 
 

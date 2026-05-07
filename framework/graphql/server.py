@@ -19,6 +19,7 @@ from framework.dsl.registry import OperationRegistry, ResolvedMutation, Resolved
 from framework.dsl.schema import CacheProfile
 from framework.graphql.errors import MultiplicityViolationError
 from framework.sql.builder import build_mutation, build_select
+from framework.stats import RequestCounters
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ def build_graphql_app(
     pool: asyncpg.Pool,
     *,
     backends_by_profile: Mapping[str, CacheBackend] | None = None,
+    request_counters: RequestCounters | None = None,
 ) -> GraphQL:
     """Construct the ariadne GraphQL ASGI app from SDL + registry + pool.
 
@@ -36,6 +38,11 @@ def build_graphql_app(
     operations covered by a CacheRule are wrapped with CacheInterceptor;
     mutations are chained with Invalidator.after_mutation post-commit.
     Without it, behavior is identical to Phase 1 (no cache).
+
+    If request_counters is supplied (Phase 3), every resolver is wrapped
+    with a counter bump (request_count_by_op) and an exception classifier
+    (errors keyed by extensions.code). The counter wrap is applied LAST
+    so cache hits and invalidator no-ops still bump the per-op counter.
     """
     query_type = QueryType()
     mutation_type = MutationType()
@@ -60,13 +67,13 @@ def build_graphql_app(
                 )
 
     for name, q in registry.queries.items():
-        inner = _make_query_resolver(q, pool)
+        inner: Callable[..., Awaitable[Any]] = _make_query_resolver(q, pool)
         if name in op_to_cache_ctx:
             backend, profile_name, profile, rule_name, tag_templates = op_to_cache_ctx[
                 name
             ]
             interceptor = CacheInterceptor(backend)
-            wrapped_q = interceptor.wrap_query(
+            inner = interceptor.wrap_query(
                 query=q,
                 profile_name=profile_name,
                 profile=profile,
@@ -74,24 +81,57 @@ def build_graphql_app(
                 tag_templates=tag_templates,
                 inner=inner,
             )
-            query_type.set_field(name, wrapped_q)
-        else:
-            query_type.set_field(name, inner)
+        if request_counters is not None:
+            inner = _wrap_with_counters(name, inner, request_counters)
+        query_type.set_field(name, inner)
 
     # Mutation resolvers: chain Invalidator if backend is supplied AND the
     # mutation has invalidates (any strategy).
     for name, m in registry.mutations.items():
-        inner_m = _make_mutation_resolver(m, pool)
+        inner = _make_mutation_resolver(m, pool)
         if backends_by_profile is not None and m.invalidates is not None:
             backend = _pick_invalidator_backend(m, registry, backends_by_profile)
             invalidator = Invalidator(backend)
-            wrapped_m = _wrap_mutation_with_invalidator(inner_m, invalidator, m)
-            mutation_type.set_field(name, wrapped_m)
-        else:
-            mutation_type.set_field(name, inner_m)
+            inner = _wrap_mutation_with_invalidator(inner, invalidator, m)
+        if request_counters is not None:
+            inner = _wrap_with_counters(name, inner, request_counters)
+        mutation_type.set_field(name, inner)
 
     schema = make_executable_schema(sdl, query_type, mutation_type)
     return GraphQL(schema, debug=False)
+
+
+def _wrap_with_counters(
+    op_name: str,
+    inner: Callable[..., Awaitable[Any]],
+    request_counters: RequestCounters,
+) -> Callable[..., Awaitable[Any]]:
+    """Bump request_count_by_op[op_name] and errors[code] around the inner resolver.
+
+    Counter increment happens BEFORE the inner call so that any exception still
+    leaves the counter incremented (the inner call's failure is recorded in the
+    errors bucket separately). This matches the contract: every invocation
+    counts, regardless of outcome.
+    """
+
+    async def wrapped(*args: Any, **kwargs: Any) -> Any:
+        request_counters.request_count_by_op[op_name] = (
+            request_counters.request_count_by_op.get(op_name, 0) + 1
+        )
+        try:
+            return await inner(*args, **kwargs)
+        except MultiplicityViolationError:
+            request_counters.errors["multiplicity.violation"] = (
+                request_counters.errors.get("multiplicity.violation", 0) + 1
+            )
+            raise
+        except Exception:
+            request_counters.errors["framework.internal_error"] = (
+                request_counters.errors.get("framework.internal_error", 0) + 1
+            )
+            raise
+
+    return wrapped
 
 
 def _pick_invalidator_backend(
