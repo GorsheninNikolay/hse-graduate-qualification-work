@@ -1,0 +1,68 @@
+# Phase 1 baseline: read path against postgres, no cache layer.
+# Mirror of dsl-spec.md §8 example with cacheProfiles + cacheRules omitted.
+# Phase 2 will add a sibling file with cache strategies wired in.
+
+version: 1
+
+sidecar:
+  listen:
+    loopback: "0.0.0.0:4000"   # 0.0.0.0 (not 127.0.0.1) so the host port-map
+                                # in docker-compose.yml can reach the listener.
+  boot:
+    postgres_timeout: 30s
+
+dataSources:
+  postgres:
+    type: postgres
+    dsn: "${env.POSTGRES_DSN}"
+    tables:
+      User:
+        table: users
+        primaryKey: id
+        columns:
+          id: id
+          name: full_name
+          teamId: team_id
+      Team:
+        table: teams
+        primaryKey: id
+        columns:
+          id: id
+          name: name
+
+queries:
+  getUser:
+    type: User
+    source: postgres
+    multiplicity: one
+    where: "id = ${args.id}"
+  listUsersByTeam:
+    type: User
+    source: postgres
+    multiplicity: many
+    where: "teamId = ${args.teamId}"
+  getTeam:
+    type: Team
+    source: postgres
+    multiplicity: one
+    where: "id = ${args.id}"
+
+mutations:
+  updateUserName:
+    type: User
+    source: postgres
+    kind: update
+    set:
+      name: "${args.name}"
+    where: "id = ${args.id}"
+    invalidates:
+      strategy: ttl       # Phase 1 stub; executor lands in Phase 2.
+  moveUserToTeam:
+    type: User
+    source: postgres
+    kind: update
+    set:
+      teamId: "${args.newTeamId}"
+    where: "id = ${args.id}"
+    invalidates:
+      strategy: ttl       # Phase 1 stub; executor lands in Phase 2.

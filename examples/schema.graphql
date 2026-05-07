@@ -1,0 +1,21 @@
+type User {
+  id: ID!
+  name: String!
+  teamId: ID!
+}
+
+type Team {
+  id: ID!
+  name: String!
+}
+
+type Query {
+  getUser(id: ID!): User
+  listUsersByTeam(teamId: ID!): [User!]!
+  getTeam(id: ID!): Team
+}
+
+type Mutation {
+  updateUserName(id: ID!, name: String!): User
+  moveUserToTeam(id: ID!, newTeamId: ID!): User
+}

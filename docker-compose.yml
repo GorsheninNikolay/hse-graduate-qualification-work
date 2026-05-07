@@ -14,6 +14,7 @@ services:
       retries: 10
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./examples/seed.sql:/docker-entrypoint-initdb.d/seed.sql:ro
 
   redis:
     image: redis:7-alpine
@@ -33,6 +34,10 @@ services:
     environment:
       POSTGRES_DSN: postgresql://postgres:postgres@postgres:5432/postgres
       REDIS_URL: redis://redis:6379/0
+      SCHEMA_PATH: /app/examples/schema.graphql
+      DSL_PATH: /app/examples/graphql-api-no-cache.yaml
+    volumes:
+      - ./examples:/app/examples:ro
     depends_on:
       postgres:
         condition: service_healthy
