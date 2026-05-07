@@ -216,3 +216,19 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Claude Code
+CLAUDE.md
+.claude/
+.mcp.json
+settings.json
+settings.local.json.example
+docs/plans
+
+# Temporary files
+.tmp/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
