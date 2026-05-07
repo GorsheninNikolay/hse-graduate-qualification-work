@@ -1,0 +1,40 @@
+.git
+.gitignore
+.gitattributes
+
+# Local virtualenvs and Python caches
+.venv
+venv
+__pycache__
+*.py[cod]
+*$py.class
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.tox
+.coverage
+htmlcov
+
+# Test and docs (not needed in runtime image)
+tests
+docs
+*.md
+!README.md
+
+# Editor / IDE
+.vscode
+.idea
+.DS_Store
+
+# Project tooling
+.beads
+.claude
+.mcp.json
+.tmp
+settings.json
+settings.local.json.example
+LICENSE
+
+# Compose
+docker-compose.yml
+Makefile

@@ -1,0 +1,47 @@
+[project]
+name = "hse-graduate-qualification-work"
+version = "0.1.0"
+description = "Фреймворк для автоматического построения GraphQL API с декларативными аннотациями стратегий инвалидации кэша"
+authors = [
+    {name = "nsgorshenin@edu.hse.ru"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "ariadne (>=0.26,<1.0)",
+    "asyncpg (>=0.30,<1.0)",
+    "redis (>=5.0,<7.0)",
+    "cachetools (>=5.5,<7.0)",
+    "pydantic (>=2.0,<3.0)",
+    "pyyaml (>=6.0,<7.0)",
+    "uvicorn (>=0.32,<1.0)",
+    "starlette (>=0.41,<1.0)",
+    "locust (>=2.32,<3.0)",
+    "matplotlib (>=3.9,<4.0)",
+]
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3"
+pytest-asyncio = "^0.24"
+ruff = "^0.15.12"
+mypy = "^1.13"
+httpx = "^0.27"
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.mypy]
+strict = true
+python_version = "3.14"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
