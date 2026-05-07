@@ -1,0 +1,12 @@
+{
+  "strategy": "no_cache",
+  "backend": "none",
+  "scenario": "mutation_burst",
+  "duration_s": 90,
+  "latency": {"p50": 80.0, "p95": 500.0, "p99": 800.0},
+  "throughput": {"rps_avg": 600.0, "total_requests": 54000},
+  "cache": {"hits": 0, "misses": 0, "hit_ratio": 0.0, "invalidations": 0, "sets": 0},
+  "request_count_by_op": {"getUser": 27000, "updateUserName": 27000},
+  "errors": {},
+  "framework_backend": "none"
+}

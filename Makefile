@@ -38,8 +38,8 @@ experiment:
 	echo "Using YAML: $$YAML"; \
 	echo "DSL_PATH=$$YAML" > .env; \
 	$(COMPOSE) stop framework; \
-	$(COMPOSE) rm -f framework; \
-	$(COMPOSE) up -d framework; \
+	$(COMPOSE) rm -f framework 2>/dev/null || true; \
+	$(COMPOSE) up -d --force-recreate framework; \
 	$(COMPOSE) exec -T redis redis-cli FLUSHDB || true; \
 	echo "Waiting for framework boot..."; \
 	sleep 12; \
@@ -48,10 +48,19 @@ experiment:
 	rm -f .env
 
 experiment-quick:
-	@echo "TODO: phase 3"
+	@MEASURED_DURATION_S=10 bash scripts/run_matrix.sh quick
 
 experiment-full:
-	@echo "TODO: phase 3"
+	@bash scripts/run_matrix.sh full
+
+# `report` aggregates the most recent matrix run by default.
+# Override the matrix list via `make report MATRIX_LIST=reports/.matrix-XXX.list`.
+MATRIX_LIST ?= $(shell ls -t reports/.matrix-*.list 2>/dev/null | head -1)
 
 report:
-	@echo "TODO: phase 4"
+	@if [ -z "$(MATRIX_LIST)" ]; then \
+	  echo "no matrix list found in reports/.matrix-*.list. run 'make experiment-quick' or 'make experiment-full' first."; \
+	  exit 2; \
+	fi
+	@echo "aggregating $(MATRIX_LIST)"
+	poetry run python -m scripts.build_report --matrix-list "$(MATRIX_LIST)"

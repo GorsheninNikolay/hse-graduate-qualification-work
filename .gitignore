@@ -226,6 +226,7 @@ settings.local.json.example
 docs/reviews
 docs/plans
 docs/architecture
+docs/presentation
 
 # Temporary files
 .tmp/

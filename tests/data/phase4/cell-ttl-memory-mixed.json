@@ -1,0 +1,12 @@
+{
+  "strategy": "ttl",
+  "backend": "memory",
+  "scenario": "mixed",
+  "duration_s": 90,
+  "latency": {"p50": 5.0, "p95": 12.0, "p99": 25.0},
+  "throughput": {"rps_avg": 900.0, "total_requests": 81000},
+  "cache": {"hits": 50000, "misses": 31000, "hit_ratio": 0.617, "invalidations": 0, "sets": 81000},
+  "request_count_by_op": {"getUser": 48600, "updateUserName": 24300, "listUsersByTeam": 8100},
+  "errors": {},
+  "framework_backend": "in_memory"
+}

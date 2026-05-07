@@ -1,0 +1,14 @@
+{
+  "strategy": "tag",
+  "backend": "redis",
+  "scenario": "read_heavy",
+  "started_at": "2026-05-07T17:13:02Z",
+  "ended_at": "2026-05-07T17:13:32Z",
+  "duration_s": 90,
+  "latency": {"p50": 200.0, "p95": 390.0, "p99": 450.0},
+  "throughput": {"rps_avg": 813.7, "total_requests": 73305},
+  "cache": {"hits": 57319, "misses": 16186, "hit_ratio": 0.7798, "invalidations": 0, "sets": 73505},
+  "request_count_by_op": {"getUser": 56391, "listUsersByTeam": 14330},
+  "errors": {},
+  "framework_backend": "redis"
+}

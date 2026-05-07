@@ -10,11 +10,13 @@ ADR-026: phase names "warmup"/"measured" are conventions; this module
 hardcodes them per the MVP simplification (no test-cases.yaml).
 """
 
+import os
+
 from locust import LoadTestShape
 
 
 WARMUP_DURATION_S = 30
-MEASURED_DURATION_S = 60
+MEASURED_DURATION_S = int(os.environ.get("MEASURED_DURATION_S", "60"))
 TOTAL_DURATION_S = WARMUP_DURATION_S + MEASURED_DURATION_S
 WARMUP_USERS = 50
 MEASURED_USERS = 200

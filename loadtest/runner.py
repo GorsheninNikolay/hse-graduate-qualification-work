@@ -31,6 +31,8 @@ from typing import Any
 
 import httpx
 
+from loadtest.shape import TOTAL_DURATION_S
+
 
 SCENARIO_TO_USER_CLASS: dict[str, str] = {
     "read_heavy": "ReadHeavyUser",
@@ -235,7 +237,7 @@ def main(argv: list[str] | None = None) -> int:
         throughput=throughput,
         started_at=start_iso,
         ended_at=end_iso,
-        duration_s=90,
+        duration_s=TOTAL_DURATION_S,
     )
     out_path = out_dir / f"report-{args.strategy}-{args.backend}-{args.scenario}-{ts_compact}.json"
     out_path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
