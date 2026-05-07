@@ -1,0 +1,105 @@
+# Phase 2 cell: invalidation=tag, backend=in_memory.
+# Mirror of examples/graphql-api-no-cache.yaml + cacheProfiles/cacheRules + invalidates blocks.
+
+version: 1
+
+sidecar:
+  listen:
+    loopback: "0.0.0.0:4000"
+  boot:
+    postgres_timeout: 30s
+
+dataSources:
+  postgres:
+    type: postgres
+    dsn: "${env.POSTGRES_DSN}"
+    tables:
+      User:
+        table: users
+        primaryKey: id
+        columns:
+          id: id
+          name: full_name
+          teamId: team_id
+      Team:
+        table: teams
+        primaryKey: id
+        columns:
+          id: id
+          name: name
+
+queries:
+  getUser:
+    type: User
+    source: postgres
+    multiplicity: one
+    where: "id = ${args.id}"
+  listUsersByTeam:
+    type: User
+    source: postgres
+    multiplicity: many
+    where: "teamId = ${args.teamId}"
+  getTeam:
+    type: Team
+    source: postgres
+    multiplicity: one
+    where: "id = ${args.id}"
+
+cacheProfiles:
+  hot:
+    backend: in_memory
+    eviction: lru
+    ttl_seconds: 60
+    max_entries: 10000
+    invalidation:
+      double_delete_delay_ms: 0
+  list:
+    backend: in_memory
+    eviction: lru
+    ttl_seconds: 30
+    max_entries: 10000
+    invalidation:
+      double_delete_delay_ms: 0
+  team:
+    backend: in_memory
+    eviction: lru
+    ttl_seconds: 300
+    max_entries: 10000
+    invalidation:
+      double_delete_delay_ms: 0
+
+cacheRules:
+  getUser:
+    operations: [getUser]
+    profile: hot
+    tags: ["user:${args.id}"]
+  listUsersByTeam:
+    operations: [listUsersByTeam]
+    profile: list
+    tags: ["team:${args.teamId}"]
+  getTeam:
+    operations: [getTeam]
+    profile: team
+    tags: ["team:${args.id}"]
+
+mutations:
+  updateUserName:
+    type: User
+    source: postgres
+    kind: update
+    set:
+      name: "${args.name}"
+    where: "id = ${args.id}"
+    invalidates:
+      strategy: tag
+      tags: ["user:${args.id}"]
+  moveUserToTeam:
+    type: User
+    source: postgres
+    kind: update
+    set:
+      teamId: "${args.newTeamId}"
+    where: "id = ${args.id}"
+    invalidates:
+      strategy: tag
+      tags: ["user:${args.id}", "team:${args.newTeamId}"]
