@@ -1,5 +1,5 @@
 """Immutable post-validation registry: column names already rewritten,
-references already resolved. Phase 2 reads this same shape."""
+references already resolved. reads this same shape."""
 
 from collections.abc import Mapping
 from dataclasses import dataclass

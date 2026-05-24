@@ -1,4 +1,4 @@
--- Phase 1 deterministic seed: 100 teams, 10000 users round-robin assigned.
+-- deterministic seed: 100 teams, 10000 users round-robin assigned.
 -- Re-seeding requires `make down && make up` because /docker-entrypoint-initdb.d/*.sql
 -- runs only on first volume init.
 

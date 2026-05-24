@@ -1,5 +1,4 @@
-"""Phase 3 Locust load profile (roadmap §4 lines 153-156).
-
+"""
 Three User classes covering the experiment matrix's scenario axis:
 
   - ReadHeavyUser:   80% getUser  / 20% listUsersByTeam
@@ -11,7 +10,7 @@ Each task POSTs a parameterized GraphQL query to /graphql with `variables` JSON
 all dynamism is in the variables. Random IDs match examples/seed.sql cardinality
 (10000 users, 100 teams).
 
-Phase 4's matrix runner narrows to one user class per cell via Locust's
+matrix runner narrows to one user class per cell via Locust's
 --user-classes flag; P3-07 (loadtest/runner.py) maps scenario name to class.
 """
 
@@ -64,7 +63,7 @@ class ReadHeavyUser(HttpUser):
     def get_user(self) -> None:
         user_id = str(random.randint(1, 10000))
         _post_gql(self.client, GET_USER_QUERY, {"id": user_id})
-
+ 
     @task(20)
     def list_users_by_team(self) -> None:
         team_id = str(random.randint(1, 100))

@@ -4,7 +4,7 @@ Concurrency discipline (ADR-024): one asyncio.Lock guards ALL mutations
 across storage caches and the rule/tag indexes. Reads (`get`) are also
 under the lock to prevent racing against an evicting `del_by_*`.
 
-Per-profile TTLCache (Q1 from the Phase 2 plan): one cachetools.TTLCache
+Per-profile TTLCache (Q1 from the plan): one cachetools.TTLCache
 per profile name, sized to profile.max_entries with ttl=profile.ttl_seconds.
 Profiles with ttl_seconds=0 ("no TTL") get math.inf for the TTL parameter
 since cachetools requires a finite-or-inf positive number.

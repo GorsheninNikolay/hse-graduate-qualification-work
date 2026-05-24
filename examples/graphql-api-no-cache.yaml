@@ -1,6 +1,6 @@
-# Phase 1 baseline: read path against postgres, no cache layer.
+# read path against postgres, no cache layer.
 # Mirror of dsl-spec.md §8 example with cacheProfiles + cacheRules omitted.
-# Phase 2 will add a sibling file with cache strategies wired in.
+# will add a sibling file with cache strategies wired in.
 
 version: 1
 
@@ -56,7 +56,7 @@ mutations:
       name: "${args.name}"
     where: "id = ${args.id}"
     invalidates:
-      strategy: ttl       # Phase 1 stub; executor lands in Phase 2.
+      strategy: ttl
   moveUserToTeam:
     type: User
     source: postgres
@@ -65,4 +65,4 @@ mutations:
       teamId: "${args.newTeamId}"
     where: "id = ${args.id}"
     invalidates:
-      strategy: ttl       # Phase 1 stub; executor lands in Phase 2.
+      strategy: ttl

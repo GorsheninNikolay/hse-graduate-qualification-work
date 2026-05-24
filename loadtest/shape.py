@@ -1,4 +1,4 @@
-"""Phase 3 Locust load shape (roadmap §4 line 157, ADR-026).
+"""Locust load shape (roadmap §4 line 157, ADR-026).
 
 Two phases:
   - warmup:   t in [0,  30) -> 50 users  (cache fill, JIT warm)

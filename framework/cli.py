@@ -120,7 +120,7 @@ async def _lifespan(_app: Starlette) -> AsyncIterator[None]:
                 backends_by_profile[name] = memory_backend
 
         logger.info(
-            "Phase 2 cache: %d profiles, redis=%s, in_memory=%s",
+            "cache: %d profiles, redis=%s, in_memory=%s",
             len(registry.cache_profiles),
             redis_profiles_present,
             bool(in_memory_profiles),

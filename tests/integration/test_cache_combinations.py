@@ -1,4 +1,4 @@
-"""Phase 2 acceptance gate: 6-cell scenario test (3 strategies x 2 backends).
+"""acceptance gate: 6-cell scenario test (3 strategies x 2 backends).
 
 These tests drive the framework's Starlette lifespan in-process via
 httpx.ASGITransport. Each cell:

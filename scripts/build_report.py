@@ -1,4 +1,4 @@
-"""Phase 4 matrix-report aggregator and chart renderer.
+"""matrix-report aggregator and chart renderer.
 
 Reads a `reports/.matrix-<ts>.list` produced by `scripts/run_matrix.sh`,
 each line a path to a per-cell `reports/report-*.json`. Produces:
@@ -134,7 +134,7 @@ def load_cells(matrix_list_path: pathlib.Path) -> list[CellRecord]:
 def _parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="build_report",
-        description="Aggregate Phase 4 matrix per-cell reports into one summary JSON + 4 PNGs.",
+        description="Aggregate matrix per-cell reports into one summary JSON + 4 PNGs.",
     )
     parser.add_argument(
         "--matrix-list",

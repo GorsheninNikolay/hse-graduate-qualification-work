@@ -22,7 +22,7 @@ from typing import Protocol, runtime_checkable
 
 @dataclass(slots=True)
 class CacheCounters:
-    """Per-backend in-process counters. Phase 3 reads these on /stats.
+    """Per-backend in-process counters. reads these on /stats.
 
     Mutated under the backend's own concurrency discipline (Redis: pipelined;
     in-memory: under the single asyncio.Lock).

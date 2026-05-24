@@ -1,4 +1,4 @@
-# Phase 2 cell variant: invalidation=ttl, backend=redis, ttl_seconds=1.
+# cell variant: invalidation=ttl, backend=redis, ttl_seconds=1.
 # Identical to graphql-api-ttl-redis.yaml except every cacheProfile has
 # ttl_seconds: 1. Used solely by tests/integration/test_cache_combinations.py
 # to verify that ttl-strategy entries eventually expire on their own (the

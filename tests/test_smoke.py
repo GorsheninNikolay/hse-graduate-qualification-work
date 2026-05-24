@@ -1,4 +1,4 @@
-"""Phase 3 smoke test: /stats returns the counter-payload schema in-process.
+"""smoke test: /stats returns the counter-payload schema in-process.
 
 Pre-lifespan (no DB connection), the framework returns a zero-valued payload
 with the same 6 keys; framework/cli.py:stats() handles the pre-lifespan

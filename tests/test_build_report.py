@@ -1,4 +1,4 @@
-"""Phase 4 unit tests for scripts/build_report.py.
+"""unit tests for scripts/build_report.py.
 
 Tests aggregation (load_cells, build_summary, write_summary,
 _matrix_ts_from_list_path) and chart shape (4 PNG functions return 1600x1000

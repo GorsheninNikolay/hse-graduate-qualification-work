@@ -218,6 +218,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Claude Code
+AGENTS.md
 CLAUDE.md
 .claude/
 .mcp.json
@@ -237,4 +238,5 @@ reports/
 # Beads / Dolt files (added by bd init)
 .dolt/
 *.db
+.beads/
 .beads-credential-key

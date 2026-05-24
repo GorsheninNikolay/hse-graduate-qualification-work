@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# scripts/run_matrix.sh — Phase 4 experiment matrix runner.
+# scripts/run_matrix.sh — experiment matrix runner.
 #
 # Iterates 21 cells (3 strategies × 2 backends × 3 scenarios + 3 no_cache
-# baselines), reusing the Phase 3 `make experiment` target for each cell.
+# baselines), reusing the `make experiment` target for each cell.
 # Records the per-cell report paths to reports/.matrix-<ts>.list so the
 # aggregator (scripts/build_report.py) gets an exact set rather than a fuzzy
 # glob.

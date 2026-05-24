@@ -1,4 +1,4 @@
-"""Phase 3 experiment runner: orchestrate one (strategy, backend, scenario) cell.
+"""orchestrate one (strategy, backend, scenario) cell.
 
 Flow:
   1. Scrape /stats baseline (counters at run start).
@@ -7,7 +7,7 @@ Flow:
   4. Parse locust *_stats.csv for the Aggregated row (p50/p95/p99/total RPS).
   5. Write reports/report-<strategy>-<backend>-<scenario>-<ts>.json.
 
-Phase 4's matrix runner invokes this per cell; that script handles the
+matrix runner invokes this per cell; that script handles the
 DSL_PATH swap + redis FLUSHDB + framework restart, the runner is pure.
 
 CLI:
@@ -187,7 +187,7 @@ def build_report(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Phase 3 experiment runner")
+    parser = argparse.ArgumentParser(description="experiment runner")
     parser.add_argument("--strategy", required=True,
                         choices=["no_cache", "ttl", "operation", "tag"])
     parser.add_argument("--backend", required=True,

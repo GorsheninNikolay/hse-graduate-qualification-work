@@ -1,6 +1,6 @@
-"""Phase 3 request counters + /stats payload assembler.
+"""request counters + /stats payload assembler.
 
-Phase 3 evolves /stats from the Phase-0 literal {"status":"booting"} payload
+evolves /stats from the Phase-0 literal {"status":"booting"} payload
 to a JSON object exposing in-memory counters per roadmap §4 line 158:
 
     {
@@ -16,11 +16,11 @@ Cache counters live in framework/cache/backend.py:CacheCounters; this module
 adds the request-side counters (per-op invocation count + per-error-code count)
 and the assembly function that produces the JSON payload.
 
-Phase 4 reads the resulting JSON pre/post each experiment cell and computes
+reads the resulting JSON pre/post each experiment cell and computes
 deltas; it is the schema contract between the framework and the matrix runner.
 
 Anti-scope: NO Prometheus exposition format. NO cardinality cap (Phase 5+).
-NO statistical aggregation (Phase 4 owns it).
+NO statistical aggregation (owns it).
 """
 
 from collections.abc import Mapping

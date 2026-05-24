@@ -1,4 +1,4 @@
-"""Phase 2 supplementary integration tests (T11): counter accuracy + idempotence.
+"""supplementary integration tests (T11): counter accuracy + idempotence.
 
 Three properties verified end-to-end through the booted Starlette app:
 

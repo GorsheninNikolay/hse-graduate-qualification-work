@@ -1,4 +1,4 @@
-# Phase 2 cell: invalidation=ttl, backend=in_memory.
+# cell: invalidation=ttl, backend=in_memory.
 # Mirror of examples/graphql-api-no-cache.yaml + cacheProfiles/cacheRules + invalidates blocks.
 
 version: 1
