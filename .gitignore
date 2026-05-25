@@ -224,10 +224,7 @@ CLAUDE.md
 .mcp.json
 settings.json
 settings.local.json.example
-docs/reviews
-docs/plans
-docs/architecture
-docs/presentation
+docs
 
 # Temporary files
 .tmp/
